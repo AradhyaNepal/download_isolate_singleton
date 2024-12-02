@@ -8,7 +8,7 @@ class DownloadIsolateManager {
   final ReceivePort _uiReceivePort = ReceivePort("DownloaderReceivePort-UI");
   SendPort? _isolateSendPort;
   final StreamController<DownloadIsolateResponse> _streamController =
-      StreamController.broadcast();
+  StreamController.broadcast();
 
   Stream get responseStream => _streamController.stream;
 
@@ -35,9 +35,10 @@ class DownloadIsolateManager {
 }
 
 void _downloadFunction(SendPort uiSendPort) {
-  final ReceivePort receivePort = ReceivePort("DownloaderReceivePort-Isolate");
-  uiSendPort.send(receivePort.sendPort);
-  receivePort.listen((data) async {
+  final ReceivePort isolateReceivePort = ReceivePort(
+      "DownloaderReceivePort-Isolate");
+  uiSendPort.send(isolateReceivePort.sendPort);
+  isolateReceivePort.listen((data) async {
     if (data is DownloadMediaRequest) {
       final response = await _downloadMediaRequest(data);
       uiSendPort.send(response);
